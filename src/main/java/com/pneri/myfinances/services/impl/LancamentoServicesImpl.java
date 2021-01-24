@@ -3,6 +3,7 @@ package com.pneri.myfinances.services.impl;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
@@ -97,6 +98,11 @@ public class LancamentoServicesImpl implements LancamentoService {
 
 		}
 
+	}
+
+	@Override
+	public Optional<Lancamento> findLancamentoById(Long id) {
+		return repository.findById(id);
 	}
 
 }

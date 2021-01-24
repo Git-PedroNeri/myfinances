@@ -58,4 +58,9 @@ public class UsuarioServiceImpl implements UsuarioService {
 	public List<Usuario> listarAllUsuarios() {
 		return usuarioRepository.findAll();
 	}
+
+	@Override
+	public Optional<Usuario> findUsuarioById(Long id) {
+		return usuarioRepository.findById(id);
+	}
 }
