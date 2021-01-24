@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpClientErrorException.BadRequest;
 
+import com.pneri.myfinances.api.dto.AtualizaStatusDTO;
 import com.pneri.myfinances.api.dto.LancamentoDTO;
 import com.pneri.myfinances.exceptions.LancamentoBussinessException;
 import com.pneri.myfinances.model.entity.Lancamento;
@@ -49,7 +51,7 @@ public class LancamentoResource {
 		}
 	}
 
-	@PutMapping("/{id}")
+	@PutMapping("{id}")
 	public ResponseEntity atualizar(@PathVariable("id") Long id, @RequestBody LancamentoDTO dto) {
 
 		return lancamentoService.findLancamentoById(id).map(entity -> {
@@ -65,8 +67,26 @@ public class LancamentoResource {
 
 	}
 
-	@DeleteMapping("/{id}")
-	public ResponseEntity deletar(@PathVariable("id") Long id, @RequestBody LancamentoDTO dto) {
+	@PutMapping("{id}/updateStatus")
+	public ResponseEntity updateStatus(@PathVariable("id") Long id, @RequestBody AtualizaStatusDTO dto) {
+		return lancamentoService.findLancamentoById(id).map(entity -> {
+			StatusLancamento statusSelecionado = StatusLancamento.valueOf(dto.getStatus());
+			if (statusSelecionado == null) {
+				return ResponseEntity.badRequest()
+						.body("Não foi possivel atualizar o status do lancamento , envie um status válido");
+			}
+			try {
+				entity.setStatus(statusSelecionado);
+				lancamentoService.atualizar(entity);
+				return ResponseEntity.ok(entity);
+			} catch (LancamentoBussinessException e) {
+				return ResponseEntity.badRequest().body(e.getMessage());
+			}
+		}).orElseGet(() -> new ResponseEntity("Lancamento nao encontrado na base de dados", HttpStatus.BAD_REQUEST));
+	}
+
+	@DeleteMapping("{id}")
+	public ResponseEntity deletar(@PathVariable("id") Long id) {
 
 		return lancamentoService.findLancamentoById(id).map(entity -> {
 			lancamentoService.deletar(entity);
@@ -127,8 +147,13 @@ public class LancamentoResource {
 				() -> new LancamentoBussinessException("Usuario nao encontrado para o id informado " + dto.getId()));
 
 		lancamento.setUsuario(usuario);
-		lancamento.setTipo(TipoLancamento.valueOf(dto.getTipo()));
-		lancamento.setStatus(StatusLancamento.valueOf(dto.getStatus()));
+		if (dto.getTipo() != null) {
+			lancamento.setTipo(TipoLancamento.valueOf(dto.getTipo()));
+		}
+
+		if (dto.getStatus() != null) {
+			lancamento.setStatus(StatusLancamento.valueOf(dto.getStatus()));
+		}
 
 		return lancamento;
 	}

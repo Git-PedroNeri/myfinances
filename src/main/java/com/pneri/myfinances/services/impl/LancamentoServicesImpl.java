@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.pneri.myfinances.exceptions.LancamentoBussinessException;
 import com.pneri.myfinances.model.entity.Lancamento;
 import com.pneri.myfinances.model.enums.StatusLancamento;
+import com.pneri.myfinances.model.enums.TipoLancamento;
 import com.pneri.myfinances.model.repositories.LancamentoRepository;
 import com.pneri.myfinances.services.LancamentoService;
 
@@ -103,6 +104,24 @@ public class LancamentoServicesImpl implements LancamentoService {
 	@Override
 	public Optional<Lancamento> findLancamentoById(Long id) {
 		return repository.findById(id);
+	}
+
+	public BigDecimal validarValor(BigDecimal val) {
+		if (val == null) {
+			return BigDecimal.ZERO;
+		} else {
+			return val;
+		}
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public BigDecimal obterSaldoByUsuario(Long id) {
+		BigDecimal receitas = repository.obterSaldoPorTipoLancamentoEUsuario(id, TipoLancamento.RECEITA);
+		BigDecimal despesas = repository.obterSaldoPorTipoLancamentoEUsuario(id, TipoLancamento.DESPESA);
+		receitas = validarValor(receitas);
+		despesas = validarValor(despesas);
+		return receitas.subtract(despesas);
 	}
 
 }

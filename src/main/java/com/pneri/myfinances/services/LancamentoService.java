@@ -1,5 +1,6 @@
 package com.pneri.myfinances.services;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,5 +22,7 @@ public interface LancamentoService {
 	void validarLancamento(Lancamento lancamento);
 
 	Optional<Lancamento> findLancamentoById(Long id);
+
+	BigDecimal obterSaldoByUsuario(Long id);
 
 }
