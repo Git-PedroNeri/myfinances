@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.pneri.myfinances.exceptions.LancamentoBussinessException;
+import com.pneri.myfinances.exceptions.UsuarioBussinessException;
 import com.pneri.myfinances.model.entity.Lancamento;
 import com.pneri.myfinances.model.enums.StatusLancamento;
 import com.pneri.myfinances.model.enums.TipoLancamento;
@@ -85,7 +86,7 @@ public class LancamentoServicesImpl implements LancamentoService {
 		}
 
 		if (lancamento.getUsuario().getId() == null) {
-			throw new LancamentoBussinessException("Informe um Usuario Existente");
+			throw new UsuarioBussinessException("Informe um Usuario Existente");
 
 		}
 
