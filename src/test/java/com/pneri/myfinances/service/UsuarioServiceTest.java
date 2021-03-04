@@ -101,7 +101,7 @@ public class UsuarioServiceTest {
 		Throwable exception = Assertions.catchThrowable(() -> serviceSpy.autenticarUsuario("email", "senha"));
 		// Asserts
 		Assertions.assertThat(exception).isInstanceOf(UsuarioErrorAuthentication.class)
-				.hasMessage("User not found Mané !!");
+				.hasMessage("Usuario não encontrado :(");
 
 	}
 
@@ -119,7 +119,7 @@ public class UsuarioServiceTest {
 				.catchThrowable(() -> serviceSpy.autenticarUsuario("email@gmail.com", "incorrectPassword"));
 
 		Assertions.assertThat(exception).isInstanceOf(UsuarioErrorAuthentication.class)
-				.hasMessage("Password invalid Mané !!");
+				.hasMessage("Senha inválida :(");
 
 	}
 
