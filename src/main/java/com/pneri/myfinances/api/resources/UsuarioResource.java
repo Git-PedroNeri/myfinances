@@ -4,8 +4,11 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
+import javax.validation.Valid;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -50,17 +53,26 @@ public class UsuarioResource {
 	}
 
 	@PostMapping
-	public ResponseEntity cadastrarUsuario(@RequestBody UsuarioDTO dto) {
+	public ResponseEntity cadastrarUsuario(@Valid @RequestBody UsuarioDTO dto) {
+
 		Usuario usuario = Usuario.builder().nome(dto.getNome()).email(dto.getEmail()).senha(dto.getSenha()).build();
 		try {
 			Usuario usuarioSalvo = usuarioService.cadastrarUsuario(usuario);
+
 			return new ResponseEntity(usuarioSalvo, HttpStatus.CREATED);
+
 		} catch (UsuarioBussinessException e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
-		}
+		} 
 
 	}
 
+	/**
+	 * retorna o saldo do usuario logado
+	 * 
+	 * @param id
+	 * @return
+	 */
 	@GetMapping("{id}/saldo")
 	public ResponseEntity ObterSaldo(@PathVariable("id") Long id) {
 		Optional<Usuario> findUsuarioById = usuarioService.findUsuarioById(id);

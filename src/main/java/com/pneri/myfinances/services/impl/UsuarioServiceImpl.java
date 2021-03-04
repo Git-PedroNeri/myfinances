@@ -26,10 +26,10 @@ public class UsuarioServiceImpl implements UsuarioService {
 	public Usuario autenticarUsuario(String email, String senha) {
 		Optional<Usuario> usuario = usuarioRepository.findByEmail(email);
 		if (!usuario.isPresent()) {
-			throw new UsuarioErrorAuthentication("User not found Mané !!");
+			throw new UsuarioErrorAuthentication("Usuario não encontrado :(");
 		}
 		if (!usuario.get().getSenha().equals(senha)) {
-			throw new UsuarioErrorAuthentication("Password invalid Mané !!");
+			throw new UsuarioErrorAuthentication("Senha inválida :(");
 
 		}
 		return usuario.get();
