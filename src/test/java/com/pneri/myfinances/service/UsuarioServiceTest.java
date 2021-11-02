@@ -26,14 +26,14 @@ public class UsuarioServiceTest {
 	@MockBean
 	UsuarioRepository usuarioRepositoryMock;
 
-	@Test(expected = Test.None.class)
+	@Test(expected = Test.None.class) // Espera que não retorne nenhuma excpetion
 	public void mustSaveAUser() {
 		// Set
 		Mockito.doNothing().when(serviceSpy).validarEmail(Mockito.anyString());
-		Usuario usuario = Usuario.builder().id(1L).nome("usuario").email("email@email.com").senha("senha").build();
+		Usuario usuario = Usuario.builder().id(10L).nome("usuario").email("email@email.com").senha("senha").build();
 		Mockito.when(usuarioRepositoryMock.save(Mockito.any(Usuario.class))).thenReturn(usuario);
 		// Action
-		Usuario usuarioSalvo = serviceSpy.cadastrarUsuario(new Usuario());
+		Usuario usuarioSalvo = serviceSpy.cadastrar(new Usuario());
 
 		// Asserts
 
@@ -45,13 +45,13 @@ public class UsuarioServiceTest {
 	}
 
 	@Test(expected = UsuarioBussinessException.class)
-	public void naoDeveSlavarOUsuarioComEmailJaCadastrado() {
+	public void naoDeveSalvarOUsuarioComEmailJaCadastrado() {
 		// Set
 		String email = "email@email.com";
 		Usuario usuario = Usuario.builder().email(email).build();
 		Mockito.doThrow(UsuarioBussinessException.class).when(serviceSpy).validarEmail(email);
 		// Action
-		serviceSpy.cadastrarUsuario(usuario);
+		serviceSpy.cadastrar(usuario);
 		Mockito.verify(usuarioRepositoryMock, Mockito.never()).save(usuario);
 	}
 
@@ -60,7 +60,6 @@ public class UsuarioServiceTest {
 	 */
 	@Test(expected = Test.None.class)
 	public void mustValidateEmail() {
-
 		// Set
 		Mockito.when(usuarioRepositoryMock.existsByEmail(Mockito.anyString())).thenReturn(false);
 		// Action
@@ -87,7 +86,7 @@ public class UsuarioServiceTest {
 		Usuario usuario = Usuario.builder().email(email).senha(senha).build();
 		Mockito.when(usuarioRepositoryMock.findByEmail(email)).thenReturn(Optional.of(usuario));
 
-		Usuario result = serviceSpy.autenticarUsuario(email, senha);
+		Usuario result = serviceSpy.autenticar(email, senha);
 
 		Assertions.assertThat(result).isNotNull();
 
@@ -98,7 +97,7 @@ public class UsuarioServiceTest {
 		// Set
 		Mockito.when(usuarioRepositoryMock.findByEmail(Mockito.anyString())).thenReturn(Optional.empty());
 		// Action
-		Throwable exception = Assertions.catchThrowable(() -> serviceSpy.autenticarUsuario("email", "senha"));
+		Throwable exception = Assertions.catchThrowable(() -> serviceSpy.autenticar("email", "senha"));
 		// Asserts
 		Assertions.assertThat(exception).isInstanceOf(UsuarioErrorAuthentication.class)
 				.hasMessage("Usuario não encontrado :(");
@@ -116,10 +115,9 @@ public class UsuarioServiceTest {
 
 		// Action
 		Throwable exception = Assertions
-				.catchThrowable(() -> serviceSpy.autenticarUsuario("email@gmail.com", "incorrectPassword"));
+				.catchThrowable(() -> serviceSpy.autenticar("email@gmail.com", "incorrectPassword"));
 
-		Assertions.assertThat(exception).isInstanceOf(UsuarioErrorAuthentication.class)
-				.hasMessage("Senha inválida :(");
+		Assertions.assertThat(exception).isInstanceOf(UsuarioErrorAuthentication.class).hasMessage("Senha inválida :(");
 
 	}
 

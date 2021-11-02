@@ -37,14 +37,14 @@ public class UsuarioResource {
 
 	@GetMapping("/list")
 	public ResponseEntity<List<Usuario>> listarAllUsuarios() {
-		List<Usuario> usuarios = usuarioService.listarAllUsuarios();
+		List<Usuario> usuarios = usuarioService.listarAll();
 		return ResponseEntity.ok(usuarios);
 	}
 
-	@PostMapping("/autenticate")
+	@PostMapping("/autenticar")
 	public ResponseEntity autenticate(@RequestBody UsuarioDTO dto) {
 		try {
-			Usuario usuarioAutenticado = usuarioService.autenticarUsuario(dto.getEmail(), dto.getSenha());
+			Usuario usuarioAutenticado = usuarioService.autenticar(dto.getEmail(), dto.getSenha());
 			return ResponseEntity.ok(usuarioAutenticado);
 		} catch (UsuarioErrorAuthentication e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
@@ -57,13 +57,13 @@ public class UsuarioResource {
 
 		Usuario usuario = Usuario.builder().nome(dto.getNome()).email(dto.getEmail()).senha(dto.getSenha()).build();
 		try {
-			Usuario usuarioSalvo = usuarioService.cadastrarUsuario(usuario);
+			Usuario usuarioSalvo = usuarioService.cadastrar(usuario);
 
 			return new ResponseEntity(usuarioSalvo, HttpStatus.CREATED);
 
 		} catch (UsuarioBussinessException e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
-		} 
+		}
 
 	}
 
@@ -75,7 +75,7 @@ public class UsuarioResource {
 	 */
 	@GetMapping("{id}/saldo")
 	public ResponseEntity ObterSaldo(@PathVariable("id") Long id) {
-		Optional<Usuario> findUsuarioById = usuarioService.findUsuarioById(id);
+		Optional<Usuario> findUsuarioById = usuarioService.findById(id);
 		if (!findUsuarioById.isPresent()) {
 			return new ResponseEntity(HttpStatus.NOT_FOUND);
 		}

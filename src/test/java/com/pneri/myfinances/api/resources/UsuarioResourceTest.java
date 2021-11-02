@@ -51,7 +51,7 @@ public class UsuarioResourceTest {
 
 		Usuario usuario = Usuario.builder().id(1l).email(email).senha(senha).build();
 
-		Mockito.when(service.autenticarUsuario(email, senha)).thenReturn(usuario);
+		Mockito.when(service.autenticar(email, senha)).thenReturn(usuario);
 
 		String json = new ObjectMapper().writeValueAsString(dto);
 
@@ -75,7 +75,7 @@ public class UsuarioResourceTest {
 
 		UsuarioDTO dto = UsuarioDTO.builder().email(email).senha(senha).build();
 
-		Mockito.when(service.autenticarUsuario(email, senha)).thenThrow(UsuarioErrorAuthentication.class);
+		Mockito.when(service.autenticar(email, senha)).thenThrow(UsuarioErrorAuthentication.class);
 
 		String json = new ObjectMapper().writeValueAsString(dto);
 
@@ -98,7 +98,7 @@ public class UsuarioResourceTest {
 
 		Usuario usuario = Usuario.builder().id(1l).email(email).senha(senha).build();
 
-		Mockito.when(service.cadastrarUsuario(Mockito.any(Usuario.class))).thenReturn(usuario);
+		Mockito.when(service.cadastrar(Mockito.any(Usuario.class))).thenReturn(usuario);
 
 		String json = new ObjectMapper().writeValueAsString(dto);
 
@@ -121,7 +121,7 @@ public class UsuarioResourceTest {
 
 		UsuarioDTO dto = UsuarioDTO.builder().email(email).senha(senha).build();
 
-		Mockito.when(service.cadastrarUsuario(Mockito.any(Usuario.class))).thenThrow(UsuarioBussinessException.class);
+		Mockito.when(service.cadastrar(Mockito.any(Usuario.class))).thenThrow(UsuarioBussinessException.class);
 
 		String json = new ObjectMapper().writeValueAsString(dto);
 

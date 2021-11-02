@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.pneri.myfinances.model.entity.Lancamento;
 import com.pneri.myfinances.model.entity.Usuario;
@@ -26,7 +27,7 @@ import lombok.Builder;
  *
  */
 @Configuration
-@Profile("dev")
+@Profile("test")
 @Builder
 public class LoadDataBaseTest implements CommandLineRunner {
 
@@ -34,15 +35,17 @@ public class LoadDataBaseTest implements CommandLineRunner {
 	private UsuarioRepository userRepósitory;
 	@Autowired
 	private LancamentoRepository lancamentoRepository;
+	@Autowired
+	private PasswordEncoder encoder;
 
 	@Override
 	public void run(String... args) throws Exception {
 
-		Usuario u1 = new Usuario(null, "Peter Pan", "peterpan@email.com", "admin");
-		Usuario u2 = new Usuario(null, "Roboin Wood", "robin.wood@email.com", "admin");
-		Usuario u3 = new Usuario(null, "Batman", "bruce.wayne@email.com", "admin");
-		Usuario u4 = new Usuario(null, "Han Solo", "han.solo@email.com", "admin");
-		Usuario u5 = new Usuario(null, "SkyWalwaker", "SkyWalwakern@email.com", "admin");
+		Usuario u1 = new Usuario(null, "Peter Pan", "peterpan@email.com", encoder.encode("admin"));
+		Usuario u2 = new Usuario(null, "Roboin Wood", "robin.wood@email.com", encoder.encode("admin"));
+		Usuario u3 = new Usuario(null, "Batman", "bruce.wayne@email.com", encoder.encode("admin"));
+		Usuario u4 = new Usuario(null, "Han Solo", "han.solo@email.com", encoder.encode("admin"));
+		Usuario u5 = new Usuario(null, "SkyWalwaker", "SkyWalwakern@email.com", encoder.encode("admin"));
 		userRepósitory.saveAll(Arrays.asList(u1, u2, u3, u4, u5));
 
 		Lancamento l1 = new Lancamento(null, "Pagamento da Fatura do Cartão", 2021, 3, BigDecimal.valueOf(230.90),

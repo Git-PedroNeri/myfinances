@@ -3,6 +3,7 @@ package com.pneri.myfinances.services.impl;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,23 +13,33 @@ import com.pneri.myfinances.model.entity.Usuario;
 import com.pneri.myfinances.model.repositories.UsuarioRepository;
 import com.pneri.myfinances.services.UsuarioService;
 
-@Service // Faz com que o container do spring gerencie esta classe
+@Service // Faz com que o container do spring gerencie uma instancia dessa classe
 public class UsuarioServiceImpl implements UsuarioService {
 
 //	@Autowired não necessario se eu estiver usando um construtor
-	UsuarioRepository usuarioRepository;
+	private UsuarioRepository usuarioRepository;// Dependencia
+	private PasswordEncoder encoder;
 
-	public UsuarioServiceImpl(UsuarioRepository usuarioRepository) {
+	public UsuarioServiceImpl(UsuarioRepository usuarioRepository, PasswordEncoder encoder) {
+		super();
 		this.usuarioRepository = usuarioRepository;
+		this.encoder = encoder;
 	}
 
+	/**
+	 *
+	 */
 	@Override
-	public Usuario autenticarUsuario(String email, String senha) {
+	public Usuario autenticar(String email, String senha) {
 		Optional<Usuario> usuario = usuarioRepository.findByEmail(email);
 		if (!usuario.isPresent()) {
-			throw new UsuarioErrorAuthentication("Usuario não encontrado :(");
+			throw new UsuarioErrorAuthentication("Usuario não encontrado :" + email);
 		}
-		if (!usuario.get().getSenha().equals(senha)) {
+
+		boolean matches = encoder.matches(senha, usuario.get().getSenha());// Compara a senha digitada com a
+																			// Criptografada
+
+		if (!matches) {
 			throw new UsuarioErrorAuthentication("Senha inválida :(");
 
 		}
@@ -37,15 +48,23 @@ public class UsuarioServiceImpl implements UsuarioService {
 
 	@Override
 	@Transactional
-	public Usuario cadastrarUsuario(Usuario usuario) {
+	public Usuario cadastrar(Usuario usuario) {
 		validarEmail(usuario.getEmail());
+		criptografarSenha(usuario);
 		Usuario user = usuarioRepository.save(usuario);
 		return user;
 
 	}
 
+	private void criptografarSenha(Usuario usuario) {
+		String senha = usuario.getSenha();
+		String senhaCripto = encoder.encode(senha);
+		usuario.setSenha(senhaCripto);
+	}
+
 	/**
-	 * Busca na base de dados se existe um usuario com este email
+	 * Busca na base de dados se existe um usuario com este email, caso não exista
+	 * lança uma exception
 	 */
 	@Override
 	public void validarEmail(String email) {
@@ -55,12 +74,12 @@ public class UsuarioServiceImpl implements UsuarioService {
 		}
 	}
 
-	public List<Usuario> listarAllUsuarios() {
+	public List<Usuario> listarAll() {
 		return usuarioRepository.findAll();
 	}
 
 	@Override
-	public Optional<Usuario> findUsuarioById(Long id) {
+	public Optional<Usuario> findById(Long id) {
 		return usuarioRepository.findById(id);
 	}
 }

@@ -7,14 +7,14 @@ import com.pneri.myfinances.model.entity.Usuario;
 
 public interface UsuarioService {
 
-	Usuario autenticarUsuario(String email, String senha);
+	Usuario autenticar(String email, String senha);
 
-	Usuario cadastrarUsuario(Usuario usuario);
+	Usuario cadastrar(Usuario usuario);
 
-	List<Usuario> listarAllUsuarios();
+	List<Usuario> listarAll();
 
 	void validarEmail(String email);
 
-	Optional<Usuario> findUsuarioById(Long id);
+	Optional<Usuario> findById(Long id);
 
 }

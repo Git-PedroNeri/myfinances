@@ -132,7 +132,7 @@ public class LancamentoResource {
 		filtro.setAno(ano);
 		filtro.setMes(mes);
 
-		Optional<Usuario> usuario = usuarioService.findUsuarioById(idUsuario);
+		Optional<Usuario> usuario = usuarioService.findById(idUsuario);
 
 		if (!usuario.isPresent()) {
 			return ResponseEntity.badRequest().body("Nao foi possivel realizar a consulta");
@@ -156,7 +156,7 @@ public class LancamentoResource {
 		lancamento.setMes(dto.getMes());
 		lancamento.setValor(dto.getValor());
 
-		Usuario usuario = usuarioService.findUsuarioById(dto.getUsuario()).orElseThrow(
+		Usuario usuario = usuarioService.findById(dto.getUsuario()).orElseThrow(
 				() -> new LancamentoBussinessException("Usuario nao encontrado para o id informado " + dto.getId()));
 
 		lancamento.setUsuario(usuario);

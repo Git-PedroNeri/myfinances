@@ -39,13 +39,16 @@ public class UsuarioRepositoryTest {
 	}
 
 	@Test
-	public void mustCheckExistsEmail() {
+	public void deveVerificarUmEmailExistente() {
 
 		// Set ou Cenario
 		Usuario usuario = createUser();
+//		usuarioRepository.save(usuario);
 		em.persist(usuario);
-		// Action ou metodo
+
+		// Action/Execucao ou metodo
 		Boolean result = usuarioRepository.existsByEmail("userEmail@email.com");
+
 		// Asserts ou Verificacao
 		Assertions.assertThat(result).isTrue();
 
@@ -54,6 +57,7 @@ public class UsuarioRepositoryTest {
 	@Test
 	void mustReturnFalseWhenNotExistsEmail() {
 		// Set
+		usuarioRepository.deleteAll();
 		// Acao--Meu metodo
 		Boolean result = usuarioRepository.existsByEmail("emailDiferente@email.com");
 		// Verificacao
