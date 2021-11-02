@@ -16,10 +16,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.pneri.myfinances.api.dto.TokenDTO;
 import com.pneri.myfinances.api.dto.UsuarioDTO;
 import com.pneri.myfinances.exceptions.UsuarioBussinessException;
 import com.pneri.myfinances.exceptions.UsuarioErrorAuthentication;
 import com.pneri.myfinances.model.entity.Usuario;
+import com.pneri.myfinances.services.JWTService;
 import com.pneri.myfinances.services.LancamentoService;
 import com.pneri.myfinances.services.UsuarioService;
 
@@ -27,12 +29,14 @@ import com.pneri.myfinances.services.UsuarioService;
 @RequestMapping("/api/usuarios")
 public class UsuarioResource {
 
-	UsuarioService usuarioService;
-	LancamentoService lancamentoService;
+	private final UsuarioService usuarioService;
+	private final LancamentoService lancamentoService;
+	private final JWTService jwtService;
 
-	public UsuarioResource(UsuarioService usuarioService, LancamentoService lancamentoService) {
+	public UsuarioResource(UsuarioService usuarioService, LancamentoService lancamentoService, JWTService jwtService) {
 		this.usuarioService = usuarioService;
 		this.lancamentoService = lancamentoService;
+		this.jwtService = jwtService;
 	}
 
 	@GetMapping("/list")
@@ -42,10 +46,12 @@ public class UsuarioResource {
 	}
 
 	@PostMapping("/autenticar")
-	public ResponseEntity autenticate(@RequestBody UsuarioDTO dto) {
+	public ResponseEntity<?> autenticar(@RequestBody UsuarioDTO dto) {
 		try {
 			Usuario usuarioAutenticado = usuarioService.autenticar(dto.getEmail(), dto.getSenha());
-			return ResponseEntity.ok(usuarioAutenticado);
+			String token = jwtService.gerarToken(usuarioAutenticado);
+			TokenDTO tokenDTO = new TokenDTO(usuarioAutenticado.getNome(), token);
+			return ResponseEntity.ok(tokenDTO);
 		} catch (UsuarioErrorAuthentication e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
 		}
